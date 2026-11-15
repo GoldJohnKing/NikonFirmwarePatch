@@ -80,10 +80,10 @@ jobs:
           from tools.check_release import check_release
           work = Path(os.environ['RUNNER_TEMP']) / 'nikon-smoke'
           work.mkdir(exist_ok=False)
-          tag = 'v0.4.0'
+          tag = 'v0.4.1'
           prefix = 'NikonFirmwarePatch-' + tag
           filename = prefix + '-toolkit.zip'
-          url = 'https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/download/' + tag + '/' + filename
+          url = 'https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/download/' + tag + '/' + filename
           expected_zip = os.environ['TOOLKIT_SHA256']
           if not re.fullmatch(r'[0-9a-f]{64}', expected_zip):
               raise ValueError('A release toolkit SHA-256 is required')

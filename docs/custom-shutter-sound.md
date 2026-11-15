@@ -4,9 +4,9 @@
 
 ## 功能
 
-在四组功能（画幅、视频品质、Log 色彩、照片工具）任意组合之上叠加**自定义快门声**。保留原厂 A–E 快门声音；在设定菜单 → 照相机声音 → 快门音类型中出现 **Load WAV from card** 行，选中后外层类型显示 **CUS**，选择保存在卡内 `M2SND0.CFG` / `M2SND1.CFG`。
+在五组功能（画幅、视频品质、Log 色彩、照片工具、记录视频方向）任意非空组合之上叠加**自定义快门声**。保留原厂 A–E 快门声音；在设定菜单 → 照相机声音 → 快门音类型中出现 **Load WAV from card** 行，选中后外层类型显示 **CUS**，选择保存在卡内 `M2SND0.CFG` / `M2SND1.CFG`。
 
-移植自 [PIPA12344/z8-card-wav](https://github.com/PIPA12344/z8-card-wav)（GPL-3.0-or-later，Z9 祖先 s3lemming/z9-firmware-patch，出处见 `z8shuttersound/NOTICE`、根 `NOTICE.md` 与 `z8shuttersound/source-provenance.json`）。选择器标签 ID 使用 **0xD00–0xD14**，与四组功能的字符串表 3137–3224 不相交（`tests/test_shuttersound_ids.py` 守护）；双次读取确认、有限重试与暂存 IO 始终启用。
+移植自 [PIPA12344/z8-card-wav](https://github.com/PIPA12344/z8-card-wav)（GPL-3.0-or-later，Z9 祖先 s3lemming/z9-firmware-patch，出处见 `z8shuttersound/NOTICE`、根 `NOTICE.md` 与 `z8shuttersound/source-provenance.json`）。选择器标签 ID 使用 **0xD00–0xD14**，与功能组的字符串表 3137–3224 不相交（`tests/test_shuttersound_ids.py` 守护）；双次读取确认、有限重试与暂存 IO 始终启用。
 
 ## 构建与核验
 
@@ -19,8 +19,8 @@ python shutter_sound.py "/path/to/Z_8_0311.bin" --features framing video-quality
 ```
 
 - 版本 `NN.NN`、标签小写字母+数字（叠加版建议 `w` 族，如 `w0`）；基底与最终固件共享同一身份。
-- `--code-source` 只作用于快门声单元：默认 `prebuilt` 使用仓库内 `resources/shuttersound.bin`（十个原厂指令槽清零，构建时从你的输入回填，无需编译器）；`source` 需 `--llvm-bin`（或 `Z8_LLVM_BIN`），且必须逐字节复现钉定单元（记录编译器为 LLVM 19.1.7）。
-- 四组功能基底始终使用发行版评审过的预编译单元，与 `patch.py` 默认一致。
+- `--code-source` 只作用于快门声单元：默认 `prebuilt` 使用发行工具包内的 `resources/shuttersound.bin`（十个原厂指令槽清零，构建时从你的输入回填，无需编译器）；`source` 需 `--llvm-bin`（或 `Z8_LLVM_BIN`），且必须逐字节复现钉定单元（记录编译器为 LLVM 19.1.7）。
+- 功能组基底始终使用发行版评审过的预编译单元，与 `patch.py` 默认一致。
 - 输出：`Z_8_<NNNN>.bin`、`manifest.json`、`SHA256SUMS.txt`；构建后自动独立核验（容器回读、从原厂输入全量重建、库存前缀窗口审计、身份字段）。
 
 固件矩阵回归（16 种选择 × 预构建 + 源码等价 + 负控）：
@@ -58,7 +58,7 @@ python -B -m z8shuttersound.verify_staged <shutter-sound-build-dir>
 
 ## English
 
-Stacks the **custom shutter sound** on top of any combination of the four feature groups. Stock A–E sounds remain; *Load WAV from card* appears under Setup menu → Camera sounds → Type, a custom selection shows **CUS**, and choices persist in `M2SND0.CFG`/`M2SND1.CFG` on the card.
+Stacks the **custom shutter sound** on top of any nonempty combination of the five feature groups. Stock A–E sounds remain; *Load WAV from card* appears under Setup menu → Camera sounds → Type, a custom selection shows **CUS**, and choices persist in `M2SND0.CFG`/`M2SND1.CFG` on the card.
 
 Ported from [PIPA12344/z8-card-wav](https://github.com/PIPA12344/z8-card-wav) (GPL-3.0-or-later; Z9 ancestor s3lemming/z9-firmware-patch). Picker label IDs occupy **0xD00–0xD14**, disjoint from the feature string IDs 3137–3224 (guarded by `tests/test_shuttersound_ids.py`); confirmation, retry and staged IO are unconditional.
 

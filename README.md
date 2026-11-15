@@ -18,7 +18,7 @@
 
 ## 简体中文
 
-Nikon Z8 C 3.11 实验补丁的离线构建工具。提供四组可独立选择的功能，并可一次构建任意组合；开发分支另含第五组 `video-orientation`（[记录视频方向](docs/video-orientation.md)），加入该组后非空组合共 31 种，此组尚未随 v0.4.0 发布。本版为 **v0.4.0**。[下载完整工具包与校验清单](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/tag/v0.4.0)。v0.4.0 的功能介绍视频见 [B 站](https://www.bilibili.com/video/BV13yW36LEED/)。使用本轮补丁构建的全选固件，已实机验证新录与旧录 N-RAW 的 Log 回放名称和辅助观感。
+Nikon Z8 C 3.11 实验补丁的离线构建工具。提供五组可独立选择的功能，并可一次构建任意非空组合，共 31 种。本版为 **v0.4.1**，是本 fork（GoldJohnKing/NikonFirmwarePatch）的第一版，基于上游 XinmiaoZhao/NikonFirmwarePatch [v0.4.0](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/tag/v0.4.0)。本版新增第五组 `video-orientation`（[记录视频方向](docs/video-orientation.md)）与自定义快门声（`shutter_sound.py`，[说明](docs/custom-shutter-sound.md)），快门声可叠加在任意功能组合之上，也可叠加在只打版本戳的原厂基底上。[下载完整工具包与校验清单](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/tag/v0.4.1)。上游 v0.4.0 的功能介绍视频见 [B 站](https://www.bilibili.com/video/BV13yW36LEED/)。上游 v0.4.0 的全选固件已实机验证新录与旧录 N-RAW 的 Log 回放名称和辅助观感；本 fork 两项新增功能的实机验证见各自文档。
 
 **使用风险。** 这是实验固件，构建或安装可能造成数据丢失、卡损坏或相机故障。离线检查不等于实机安全保证，请勿用于不可替代的工作。无担保及责任条款见 [LICENSE](LICENSE) 和 [NOTICE](NOTICE.md)。
 
@@ -28,15 +28,15 @@ Nikon Z8 C 3.11 实验补丁的离线构建工具。提供四组可独立选择�
 | `video-quality` | ProRes HQ／422／LT／Proxy 及 HQ 星标；H.265 五档码率、星标与保护计时修正 |
 | `log-colour` | Log 菜单选择 N-Log／BT.2020、S-Log3／S-Gamut3.Cine、Log3G10／REDWideGamutRGB，含标签、图标和显示辅助 |
 | `photo-tools` | C15/C30 RAW 预拍（FX/DX，无损选择回退 HE★）与像素偏移合成（修复任意起始编号的组识别） |
-| `video-orientation` | 视频拍摄菜单新增“记录视频方向”行（开发版）：录像开始锁存竖拍／倒置姿态并写入录像容器的旋转元数据；按视频拍摄菜单库保存，默认开 |
+| `video-orientation` | 视频拍摄菜单新增“记录视频方向”行：录像开始锁存竖拍／倒置姿态并写入录像容器的旋转元数据；按视频拍摄菜单库保存，默认开 |
 
 N-RAW 四档始终与开放门在同一组；`video-quality` 指 ProRes＋H.265。反挤压可关闭，开放门只在选择相应画幅时启用。照片组的两项功能各有机内入口。像素位移合成需要完整的 FX 无损 NEF 组，预拍输出不适用。Log 录像使用经实拍标定的矩阵与常量 Cpxs；S-Log3 沿用原厂截零，Log3G10 录像不含 RED 的 F 映射。
 
-发布工具包的四组有 15 种非空组合。旧选项 `prores / precapture / pixelshift / opengate-nraw` 不再被当前 CLI 接受，也不会静默扩大为新组；需要复现旧包时使用对应旧发布源码与工具包。
+发布工具包的五组有 31 种非空组合。旧选项 `prores / precapture / pixelshift / opengate-nraw` 不再被当前 CLI 接受，也不会静默扩大为新组；需要复现旧包时使用对应旧发布源码与工具包。
 
 ### 获取固件与工具包
 
-使用完整版 [toolkit ZIP](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/download/v0.4.0/NikonFirmwarePatch-v0.4.0-toolkit.zip)，按 [SHA256SUMS.txt](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/download/v0.4.0/SHA256SUMS.txt) 核对下载后解压。GitHub 自动生成的 Source code 包和 Git 克隆只含源码；完整工具包还带九个经审阅的预编译补丁单元。工具源码、预编译单元及配方须来自同一版。
+使用完整版 [toolkit ZIP](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/download/v0.4.1/NikonFirmwarePatch-v0.4.1-toolkit.zip)，按 [SHA256SUMS.txt](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/download/v0.4.1/SHA256SUMS.txt) 核对下载后解压。GitHub 自动生成的 Source code 包和 Git 克隆只含源码；完整工具包还带十一份经审阅的预编译补丁单元，其中八份复用上游 v0.4.0 发布工具包中的字节，另外三份（上游公共单元 shared 的扩展、video-orientation 单元、shuttersound 单元）由本 fork 以 LLVM 19.1.7 编译钉定。工具源码、预编译单元及配方须来自同一版。
 
 请自行从 Nikon 取得 [Z8 C 3.11 官方输入](https://download.nikonimglib.com/archive8/wP5Vr003qbpC07ibhJ666rmRfF47/Z_8_0311.bin) 并遵守其许可条款。尼康原 C 3.11 说明页已下线，可查阅[原说明页的 Wayback 快照](https://web.archive.org/web/20260920232234/https://downloadcenter.nikonimglib.com/en/download/fw/606.html)。固件由尼康服务器提供，另有[尼康备用下载链接](https://download.nikonimglib.com/archive8/ulkCY0035nUW07Elwhy66zV8P546/Z_8_0311.bin)。两个链接的完整文件核验记录见 [issue #11](https://github.com/XinmiaoZhao/NikonFirmwarePatch/issues/11#issuecomment-6493044598)。
 
@@ -76,35 +76,37 @@ python -m pip install -r requirements.txt
 python patch.py Z_8_0311.bin --check
 ```
 
-以下命令使用完整工具包的默认预编译模式。直接从 Git 源码构建时，在构建命令末尾加 `--code-source source --compiler clang`；已核对的编译器为 Apple clang 21.0.0（clang-2100.1.1.101）。其他编译器须产生相同字节、符号与入口地址。缺少或损坏预编译单元时工具会停止。
+以下命令使用完整工具包的默认预编译模式。直接从 Git 源码构建时，在构建命令末尾加 `--code-source source --compiler clang`；上游复用的八份单元钉定于 Apple clang 21.0.0（clang-2100.1.1.101），本 fork 编译的三份单元钉定于 LLVM 19.1.7。其他编译器同样必须产生钉定的字节、符号与入口地址。缺少或损坏预编译单元时工具会停止。
 
 ```sh
 # 单独构建画幅组。
 python patch.py Z_8_0311.bin --features framing --version 04.06 --tag p0 --output build/framing
 
-# 全选四组，版本号用于标识本次输出。
-python patch.py Z_8_0311.bin --features framing video-quality log-colour photo-tools --version 04.06 --tag p0 --output build/all
-# v0.4.0 四组全选、版本 04.06、tag p0：build/all/Z_8_0406.bin 的 SHA-256
+# 全选五组，版本号用于标识本次输出。
+python patch.py Z_8_0311.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.06 --tag p0 --output build/all
+# 上游 v0.4.0 四组全选、04.06.p0 的参考 SHA-256 如下；本 fork 扩展了 shared 单元，
+# 同样的四组命令不再复现该值：
 # 4deca457f0e3af1ea858e53db55ce4946cd99d916c663304e351047c049d2a63
+# 五组全选的参考 SHA-256 随 v0.4.1 发布页公布。
 
-# 交互选择四组；预编译工具包默认不调用编译器。
+# 交互选择功能组；预编译工具包默认不调用编译器。
 python patch.py Z_8_0311.bin --interactive --version 04.06 --tag p0 --output build/chosen
 
 # 在任意功能组合上叠加自定义快门声（WAV 要求与行为见 docs/custom-shutter-sound.md）。
-python shutter_sound.py Z_8_0311.bin --features framing video-quality log-colour photo-tools --version 04.07 --tag w0 --output build/all-wav
+python shutter_sound.py Z_8_0311.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.07 --tag w0 --output build/all-wav
 
-# 仅快门声，不含四组功能。
+# 仅快门声，不含功能组。
 python shutter_sound.py Z_8_0311.bin --shutter-sound-only --version 04.07 --tag w0 --output build/wav
 ```
 
-快门声叠加建议使用 `w` 族标签；其 `--code-source` 只作用于快门声单元（默认预编译零槽单元，无需编译器；源码模式钉定 LLVM 19.1.7）。四组功能基底始终使用评审过的预编译单元。
+快门声叠加建议使用 `w` 族标签；其 `--code-source` 只作用于快门声单元（默认预编译零槽单元，无需编译器；源码模式钉定 LLVM 19.1.7）。功能组基底始终使用评审过的预编译单元。
 
 构建输出为 `.bin`、`manifest.json` 和 `SHA256SUMS.txt`。输出目录必须不存在；输入原件不会被覆盖。本页各命令统一用 04.06 演示。不同功能组合可能使用相同文件名；保留各自的输出目录，按 manifest 中的功能清单和 SHA-256 区分。实际上机时建议给不同内容分配不同身份。`00.xx.t0` 仅用于离线测试，不能作为上机包。
 
 独立核验示例：
 
 ```sh
-python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-quality log-colour photo-tools --version 04.06 --tag p0
+python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.06 --tag p0
 ```
 
 `verify.py` 不导入构建器，独立检查封装、输入身份、补丁窗口和未改字节，并检查共享菜单、分组可见性、字符串边界与初始化状态。它不能证明相机上的硬件行为。
@@ -113,9 +115,9 @@ python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-qu
 
 ### 功能说明与验证
 
-- [四组结构与迁移](docs/feature-groups.md)
+- [五组结构与迁移](docs/feature-groups.md)
 - [开放门／N-RAW](docs/opengate-nraw.md)、[反挤压](docs/anamorphic.md)
-- [ProRes](docs/prores.md)、[H.265](docs/h265.md)、[记录视频方向](docs/video-orientation.md)（开发版）
+- [ProRes](docs/prores.md)、[H.265](docs/h265.md)、[记录视频方向](docs/video-orientation.md)
 - [Log 设置与后期流程](docs/log-colour.md)、[色彩报告：中文](docs/log-colour-report.md)／[English](docs/log-colour-report.en.md)、[后期 F LUT](luts/README.md)
 - [RAW 预拍](docs/raw-precapture.md)、[像素偏移](docs/pixelshift.md)
 - [当前验证](docs/validation.md)、[已知问题](docs/known-issues.md)、[更新日志](CHANGELOG.md)
@@ -134,7 +136,7 @@ python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-qu
 
 ## English
 
-This offline toolkit builds experimental patches for the original Nikon Z8 C 3.11 firmware. Select any of four feature groups or combine them in one build; the development branch adds a fifth group, `video-orientation` ([record video orientation](docs/video-orientation.md)), bringing nonempty combinations to 31. That group is not part of the v0.4.0 release. The current release is **v0.4.0**. [Download the toolkit and checksums](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/tag/v0.4.0). A short v0.4.0 feature video is on [Bilibili](https://www.bilibili.com/video/BV13yW36LEED/) (Chinese, with English captions). On a Z8, the all-feature firmware built with this update showed the expected Log names and assist rendering when playing both newly recorded and existing N-RAW clips.
+This offline toolkit builds experimental patches for the original Nikon Z8 C 3.11 firmware. Select any of five feature groups or combine them in one build, 31 nonempty combinations in all. The current release is **v0.4.1**, the first release of this fork (GoldJohnKing/NikonFirmwarePatch), built on top of upstream XinmiaoZhao/NikonFirmwarePatch [v0.4.0](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/tag/v0.4.0). New in v0.4.1: the fifth build group `video-orientation` ([record video orientation](docs/video-orientation.md)) and the custom shutter sound (`shutter_sound.py`, see the [guide](docs/custom-shutter-sound.md)), which stacks on any feature combination or on a version-stamped stock base. [Download the toolkit and checksums](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/tag/v0.4.1). A short feature video for upstream v0.4.0 is on [Bilibili](https://www.bilibili.com/video/BV13yW36LEED/) (Chinese, with English captions). The upstream v0.4.0 all-feature firmware passed on-camera checks of the Log playback names and assist rendering for both newly recorded and existing N-RAW clips; see the shutter-sound and video-orientation guides for this fork's on-camera verification.
 
 **Risk of use.** Building or installing experimental firmware can cause data loss, card corruption or camera malfunction. Offline checks cannot guarantee safe operation on a camera. Avoid using experimental firmware for irreplaceable work. See the warranty and liability terms in [LICENSE](LICENSE) and [NOTICE](NOTICE.md).
 
@@ -144,15 +146,15 @@ This offline toolkit builds experimental patches for the original Nikon Z8 C 3.1
 | `video-quality` | ProRes HQ/422/LT/Proxy with an HQ star, plus five H.265 bitrate settings, star indication and a protection-timer fix |
 | `log-colour` | N-Log / BT.2020, S-Log3 / S-Gamut3.Cine or Log3G10 / REDWideGamutRGB, with labels, icons and view assist |
 | `photo-tools` | C15/C30 RAW pre-capture in FX/DX with lossless selection falling back to HE★, and pixel-shift merging with any starting file number |
-| `video-orientation` | New "Record video orientation" row in the movie menu (development builds): latches portrait or upside-down pose at recording start and writes rotation metadata into recorded containers; saved per movie bank, default On |
+| `video-orientation` | New "Record video orientation" row in the movie menu: latches portrait or upside-down pose at recording start and writes rotation metadata into recorded containers; saved per movie bank, default On |
 
 The four N-RAW tiers belong to the open-gate group. ProRes and H.265 belong to `video-quality`. Desqueeze can be disabled, and open gate applies only when the corresponding frame size is selected. The two photo tools have separate camera controls. Pixel-shift merging requires a complete group of lossless FX NEFs, which excludes pre-capture outputs. Log recording uses camera-calibrated matrices and constant chroma compensation (Cpxs). S-Log3 retains stock clipping at zero; Log3G10 recording omits RED’s F mapping.
 
-The released four-group toolkit has 15 nonempty combinations. The current CLI rejects the legacy names `prores / precapture / pixelshift / opengate-nraw` to avoid silently expanding a selection. To reproduce an earlier package, use that release’s source and toolkit.
+The released five-group toolkit has 31 nonempty combinations. The current CLI rejects the legacy names `prores / precapture / pixelshift / opengate-nraw` to avoid silently expanding a selection. To reproduce an earlier package, use that release’s source and toolkit.
 
 ### Get the firmware and toolkit
 
-Download the complete [toolkit ZIP](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/download/v0.4.0/NikonFirmwarePatch-v0.4.0-toolkit.zip), check it against [SHA256SUMS.txt](https://github.com/XinmiaoZhao/NikonFirmwarePatch/releases/download/v0.4.0/SHA256SUMS.txt), then extract it. Git clones and GitHub’s automatic source archives contain the source only. The complete toolkit includes nine reviewed precompiled patch units. Use tools, patch units and recipes from the same release.
+Download the complete [toolkit ZIP](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/download/v0.4.1/NikonFirmwarePatch-v0.4.1-toolkit.zip), check it against [SHA256SUMS.txt](https://github.com/GoldJohnKing/NikonFirmwarePatch/releases/download/v0.4.1/SHA256SUMS.txt), then extract it. Git clones and GitHub’s automatic source archives contain the source only. The complete toolkit includes eleven reviewed precompiled patch units: eight reuse the bytes from the upstream v0.4.0 release toolkit, and three (the extended upstream common unit `shared`, the `video-orientation` unit and the `shuttersound` unit) are compiled and pinned in this fork with LLVM 19.1.7. Use tools, patch units and recipes from the same release.
 
 Obtain the [original Z8 C 3.11 firmware](https://download.nikonimglib.com/archive8/wP5Vr003qbpC07ibhJ666rmRfF47/Z_8_0311.bin) from Nikon under its license terms. Nikon has withdrawn the original C 3.11 landing page. The [Wayback snapshot of the original instructions](https://web.archive.org/web/20260920232234/https://downloadcenter.nikonimglib.com/en/download/fw/606.html) preserves that page. The firmware download is served by Nikon, with an [alternate Nikon download](https://download.nikonimglib.com/archive8/ulkCY0035nUW07Elwhy66zV8P546/Z_8_0311.bin). Both downloads were verified in full in [issue #11](https://github.com/XinmiaoZhao/NikonFirmwarePatch/issues/11#issuecomment-6493044598).
 
@@ -192,35 +194,37 @@ Check the input firmware.
 python patch.py Z_8_0311.bin --check
 ```
 
-The commands below use the complete toolkit’s default prebuilt mode. When building directly from Git source, append `--code-source source --compiler clang` to the build command. The reviewed compiler is Apple clang 21.0.0 (clang-2100.1.1.101). Any other compiler must reproduce the pinned bytes, symbols and entry addresses. Missing or damaged prebuilt units stop the build.
+The commands below use the complete toolkit’s default prebuilt mode. When building directly from Git source, append `--code-source source --compiler clang` to the build command. The eight units reused from upstream are pinned to Apple clang 21.0.0 (clang-2100.1.1.101); the three units compiled in this fork are pinned to LLVM 19.1.7. Any other compiler must reproduce the same pinned bytes, symbols and entry addresses. Missing or damaged prebuilt units stop the build.
 
 ```sh
 # Build only the framing group.
 python patch.py Z_8_0311.bin --features framing --version 04.06 --tag p0 --output build/framing
 
-# Build all four groups; the version identifies the output.
-python patch.py Z_8_0311.bin --features framing video-quality log-colour photo-tools --version 04.06 --tag p0 --output build/all
-# SHA-256 of build/all/Z_8_0406.bin with v0.4.0, all four groups, version 04.06 and tag p0
+# Build all five groups; the version identifies the output.
+python patch.py Z_8_0311.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.06 --tag p0 --output build/all
+# Reference SHA-256 of the upstream v0.4.0 four-group build, 04.06.p0 (this fork extends
+# the shared unit, so the same four-group command no longer reproduces it):
 # 4deca457f0e3af1ea858e53db55ce4946cd99d916c663304e351047c049d2a63
+# The five-group full-selection reference SHA-256 is published with the v0.4.1 release.
 
 # Choose groups interactively; prebuilt mode runs without a compiler.
 python patch.py Z_8_0311.bin --interactive --version 04.06 --tag p0 --output build/chosen
 
 # Stack the custom shutter sound on any feature combination (see docs/custom-shutter-sound.md).
-python shutter_sound.py Z_8_0311.bin --features framing video-quality log-colour photo-tools --version 04.07 --tag w0 --output build/all-wav
+python shutter_sound.py Z_8_0311.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.07 --tag w0 --output build/all-wav
 
-# Custom shutter sound only, without the four feature groups.
+# Custom shutter sound only, without the feature groups.
 python shutter_sound.py Z_8_0311.bin --shutter-sound-only --version 04.07 --tag w0 --output build/wav
 ```
 
-Shutter-sound-inclusive builds use the `w` tag family. `--code-source` applies to the shutter-sound unit only (the reviewed prebuilt unit ships with the Release toolkit; git checkouts build it with `source`, byte-matching the pinned LLVM 19.1.7 recipe). The four-group base always uses the reviewed prebuilt units.
+Shutter-sound-inclusive builds use the `w` tag family. `--code-source` applies to the shutter-sound unit only (the reviewed prebuilt unit ships with the Release toolkit; git checkouts build it with `source`, byte-matching the pinned LLVM 19.1.7 recipe). The feature-group base always uses the reviewed prebuilt units.
 
 Each build produces a firmware `.bin`, `manifest.json` and `SHA256SUMS.txt`. Choose an output directory that does not already exist. The original input is preserved. All examples use 04.06. Different selections can therefore produce the same filename. Keep their output directories separate and identify each package by the feature list and SHA-256 in its manifest. Assign distinct identities to different packages for camera use. Reserve `00.xx.t0` for offline testing.
 
 Independently verify the full-selection example.
 
 ```sh
-python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-quality log-colour photo-tools --version 04.06 --tag p0
+python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-quality log-colour photo-tools video-orientation --version 04.06 --tag p0
 ```
 
 `verify.py` checks the container, original input identity, patch windows and preserved bytes independently of the builder. It also checks shared menus, feature visibility, string boundaries and initial state. Hardware behaviour requires camera testing.
@@ -229,9 +233,9 @@ The version format is `NN.NN`; the internal tag is one lowercase letter followed
 
 ### Feature guides and verification
 
-- [Four feature groups and migration](docs/feature-groups.md)
+- [Five feature groups and migration](docs/feature-groups.md)
 - [Open gate / N-RAW](docs/opengate-nraw.md) and [desqueeze](docs/anamorphic.md)
-- [ProRes](docs/prores.md), [H.265](docs/h265.md) and [video orientation](docs/video-orientation.md) (development builds)
+- [ProRes](docs/prores.md), [H.265](docs/h265.md) and [video orientation](docs/video-orientation.md)
 - [Log settings and grading workflow](docs/log-colour.md#english), colour report in [Chinese](docs/log-colour-report.md) or [English](docs/log-colour-report.en.md), and [F LUT for post](luts/README.md)
 - [RAW pre-capture](docs/raw-precapture.md) and [pixel shift](docs/pixelshift.md)
 - [Current validation](docs/validation.md), [known limits](docs/known-issues.md) and [changelog](CHANGELOG.md)
