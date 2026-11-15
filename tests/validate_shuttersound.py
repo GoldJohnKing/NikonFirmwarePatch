@@ -48,9 +48,10 @@ def main():
         keep = Path(tmp) / 'keep'
         from z8shuttersound.stack import unpack
 
-        # Full matrix: 15 feature combinations plus WAV, prebuilt unit.
+        # Full matrix: every nonempty feature combination plus WAV (31; the sound-only
+        # build below makes 32 selections), prebuilt unit.
         import time
-        for bits in itertools.product((False, True), repeat=4):
+        for bits in itertools.product((False, True), repeat=len(FEATURES)):
             names = [f for f, on in zip(FEATURES, bits) if on]
             if not names:
                 continue
