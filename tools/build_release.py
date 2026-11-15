@@ -16,6 +16,7 @@ def verified_upstream(path):
         names=[e.filename for e in archive.infolist()];listed=[n for n in names if n.endswith('/'+MANIFEST)]
         need(len(names)==len(set(names)) and len(listed)==1,'Upstream toolkit manifest missing, ambiguous or duplicated')
         prefix=listed[0][:-len(MANIFEST)-1];record=json.loads(archive.read(listed[0]))
+        need('files' in record,'Upstream toolkit manifest lacks member digests')
         need({n[len(prefix)+1:] for n in names}==set(record['files'])|{MANIFEST},'Upstream toolkit member mismatch')
         members={n:archive.read(prefix+'/'+n) for n in record['files']}
     for n,m in record['files'].items():need(len(members[n])==m['bytes'] and hashlib.sha256(members[n]).hexdigest()==m['sha256'],'Upstream toolkit member digest mismatch: '+n)
@@ -35,13 +36,14 @@ def main():
     for name,profile in units.items():
         # A unit ships from local compilation only when every pinned field reproduces;
         # otherwise it must come byte-identical from the released upstream toolkit.
+        cause=''
         try:code,detail=compile_unit(name,a.compiler);local=detail==profile
-        except (OSError,ValueError,subprocess.CalledProcessError):local=False
+        except (OSError,ValueError,subprocess.CalledProcessError) as e:local=False;cause='; local compile failed: '+str(e)
         if local:files[profile['resource']]=code;continue
-        need(a.upstream_toolkit,'Unit does not reproduce with --compiler; provide --upstream-toolkit: '+name)
+        need(a.upstream_toolkit,'Unit does not reproduce with --compiler; provide --upstream-toolkit: '+name+cause)
         if upstream is None:upstream=verified_upstream(a.upstream_toolkit)
         pins,members=upstream
-        need(name in pins and pins[name]==profile,'Upstream toolkit pins a different unit: '+name)
+        need(name in pins and pins[name]==profile,'Upstream toolkit pins a different unit: '+name+cause)
         code=members.get(profile['resource'])
         need(code is not None and len(code)==profile['bytes'] and hashlib.sha256(code).hexdigest()==profile['sha256'],'Upstream unit bytes differ from the reviewed recipe: '+name)
         files[profile['resource']]=code
@@ -61,4 +63,4 @@ def main():
     print(json.dumps(verified,indent=2))
 if __name__=='__main__':
     try:main()
-    except (ValueError,OSError,KeyError,subprocess.CalledProcessError) as e:raise SystemExit('ERROR: '+str(e))
+    except (ValueError,OSError,KeyError,zipfile.BadZipFile,subprocess.CalledProcessError) as e:raise SystemExit('ERROR: '+str(e))
