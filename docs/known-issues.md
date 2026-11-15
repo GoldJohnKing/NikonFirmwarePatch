@@ -1,8 +1,8 @@
-> 当前四组版本 v0.4.0 的机身测试范围见[验证记录](validation.md)。本文按功能列出实际限制。
+> 当前版本 v0.4.1（本 fork，含五组功能与自定义快门声，基于上游 XinmiaoZhao v0.4.0）的机身测试范围见[验证记录](validation.md)。本文按功能列出实际限制。
 
 # 已知问题与功能限制 / Known issues and feature limits
 
-适用于基于官方 Nikon Z8 C 3.11 的当前四组版本 v0.4.0；历史公开版本限制保留具体版本号。以下列出当前实现中已确认的问题和明确的功能限制；操作方法见各功能指南，验证记录见[当前版本验证](validation.md)。
+适用于基于官方 Nikon Z8 C 3.11 的当前版本 v0.4.1（本 fork，含五组功能与自定义快门声，基于上游 XinmiaoZhao v0.4.0）；历史公开版本限制保留具体版本号。以下列出当前实现中已确认的问题和明确的功能限制；操作方法见各功能指南，验证记录见[当前版本验证](validation.md)。
 
 ## Windows 工具包修订
 
@@ -52,9 +52,9 @@
 
 模式选择与各档码率预算见[开放门／N-RAW 指南](opengate-nraw.md)。
 
-## 记录视频方向（开发组）
+## 记录视频方向
 
-以下适用于开发分支的第五组 `video-orientation`，尚未随 v0.4.0 发布；功能说明见[记录视频方向指南](video-orientation.md)。
+以下适用于第五组 `video-orientation`（随本 fork 的 v0.4.1 发布）；功能说明见[记录视频方向指南](video-orientation.md)。
 
 - **断电后回到默认“开”。** 取值按视频拍摄菜单库 A–D 分别记忆，会话内切换菜单库时随库切换，手动关闭在本次开机期间保持；断电重启后各库重新初始化为“开”。该字节与已发布的 H.265 档位字节同属一个相机设置记录的空位，断电语义一致。菜单项的保存、菜单库切换、断电重启与菜单重设行为均已实机验证，与已发布的 H.265 档位功能完全一致。
 - **部分视频格式在停录时刻采样姿态。** 交付路径随视频格式不同，与分辨率无关：H.264 档位与 H.265 8-bit 档位（不可切换色调模式的格式）由停录后启动的交付写者完成文件，姿态在该写者启动时采样而非开录时刻，停录后立刻大幅改变持机方向可能标错；H.265 10-bit、ProRes 422 HQ 与 RAW 家族（ProRes RAW、N-RAW）在开录时刻采样，不受影响。
@@ -68,7 +68,7 @@
 
 The original v0.3.0 can reject pre-capture, pixel-shift or open-gate builds on Windows with `Compiled patch source does not match the reviewed recipe`, even when `--check` passes. v0.3.0-r1 fixes path-separator comparison. Extract the complete revised toolkit into a fresh directory and build from official C 3.11 into a new output directory. Keep the recipes and hash checks intact. `--check` validates input compatibility; it is not a complete build check. See [issue #12](https://github.com/XinmiaoZhao/NikonFirmwarePatch/issues/12).
 
-Applies to the current four-group release, v0.4.0, built from official Nikon Z8 C 3.11. Historical limitations name their affected releases.
+Applies to the current release, v0.4.1 in this fork (five feature groups plus the custom shutter sound, built on upstream XinmiaoZhao v0.4.0), built from official Nikon Z8 C 3.11. Historical limitations name their affected releases.
 
 ### RAW capture and pre-capture
 
@@ -103,9 +103,9 @@ The camera tester confirmed per-clip labels and view assist on previously record
 - Compatibility metadata maps Fine to High and Basic to Normal for two-tier readers. Those labels cannot distinguish all four actual encoding grades.
 - Basic uses a 1.0-bit/pixel budget, with reduced fine texture observed in camera samples. Open-gate High uses 2.5 bits/pixel versus 3.0 for ordinary 8.3K 30/25/24p High.
 
-### Record video orientation (development group)
+### Record video orientation
 
-Applies to the development-branch fifth group `video-orientation`, which is not part of the v0.4.0 release. See the [video-orientation guide](video-orientation.md).
+Applies to the fifth group `video-orientation`, which ships in this fork's v0.4.1. See the [video-orientation guide](video-orientation.md).
 
 - **A power cycle returns every bank to the default On.** The value is remembered per movie shooting bank, follows bank switches within the session and a manual Off persists until power-off; after a restart each bank is re-initialized to On. The byte occupies a spare byte of the same camera-settings record as the shipped H.265 tier byte, with identical restart semantics. The row's save, menu-bank switching, power-cycle and reset-menu behaviour is verified on the camera and matches the shipped H.265 tier feature exactly.
 - **Some video formats sample the pose when the recording stops.** The delivery path depends on the video format, not the resolution: the H.264 modes and the H.265 8-bit modes (the formats without tone-mode switching) are finished by a delivery writer that starts right after the recording stops, and the pose is sampled when that writer starts, not when the recording started, so turning the camera a lot immediately after stopping can mis-mark the clip. H.265 10-bit, ProRes 422 HQ and the RAW family (ProRes RAW, N-RAW) sample at recording start and are not affected.

@@ -115,7 +115,7 @@ python verify.py Z_8_0311.bin build/all/Z_8_0406.bin --features framing video-qu
 
 ### 功能说明与验证
 
-- [四组结构与迁移](docs/feature-groups.md)
+- [五组结构与迁移](docs/feature-groups.md)
 - [开放门／N-RAW](docs/opengate-nraw.md)、[反挤压](docs/anamorphic.md)
 - [ProRes](docs/prores.md)、[H.265](docs/h265.md)、[记录视频方向](docs/video-orientation.md)
 - [Log 设置与后期流程](docs/log-colour.md)、[色彩报告：中文](docs/log-colour-report.md)／[English](docs/log-colour-report.en.md)、[后期 F LUT](luts/README.md)
@@ -233,7 +233,7 @@ The version format is `NN.NN`; the internal tag is one lowercase letter followed
 
 ### Feature guides and verification
 
-- [Four feature groups and migration](docs/feature-groups.md)
+- [Five feature groups and migration](docs/feature-groups.md)
 - [Open gate / N-RAW](docs/opengate-nraw.md) and [desqueeze](docs/anamorphic.md)
 - [ProRes](docs/prores.md), [H.265](docs/h265.md) and [video orientation](docs/video-orientation.md)
 - [Log settings and grading workflow](docs/log-colour.md#english), colour report in [Chinese](docs/log-colour-report.md) or [English](docs/log-colour-report.en.md), and [F LUT for post](luts/README.md)
