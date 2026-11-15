@@ -13,7 +13,7 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from z8patch import compiled
-from tools.check_release import TAG
+from tools.check_release import CODE_FILES, TAG
 
 UNITS = ('precapture','pixelshift','pixelshift-af','opengate','anamorphic','h265','log','quality','shared','video-orientation')
 FOLDERS = {'precapture':'z8precapture/', 'pixelshift':'z8pixelshift/src/', 'pixelshift-af':'z8pixelshift/src/', 'opengate':'z8opengate/src/', 'anamorphic':'z8anamorphic/', 'h265':'z8h265/', 'log':'z8log/', 'quality':'z8quality/', 'shared':'z8patch/src/', 'video-orientation':'z8videoorientation/'}
@@ -180,6 +180,15 @@ class CompiledPathTests(unittest.TestCase):
                                 compiled.load(name)
                         finally:
                             path.write_bytes(self.code[name])
+
+    def test_release_code_files_add_exactly_the_shutter_sound_unit(self):
+        units = json.loads((ROOT / 'resources/compiled.json').read_text(encoding='utf-8'))['units']
+        pin = json.loads((ROOT / 'resources/shuttersound.json').read_text(encoding='utf-8'))
+        self.assertIn('resources/shuttersound.bin', CODE_FILES)
+        self.assertEqual(set(CODE_FILES) - {u['resource'] for u in units.values()}, {'resources/shuttersound.bin'})
+        self.assertEqual(len(CODE_FILES), len(units) + 1)
+        self.assertTrue({'bytes', 'sha256', 'filled_sha256'} <= set(pin),
+                        'shuttersound.json must pin the unit recipe fields')
 
     def test_revision_release_tag_is_explicit(self):
         for value in ('v0.3.0', 'v0.3.0-rc.1', 'v0.3.0-r1', 'v0.3.0-r12'):

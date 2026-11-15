@@ -250,7 +250,8 @@ SOURCE_FILES=(
     'z8videoorientation/src/hooks.S',
     'z8videoorientation/translations.py',
 )
-CODE_FILES=('resources/precapture.bin', 'resources/pixelshift.bin', 'resources/pixelshift-af.bin', 'resources/opengate.bin', 'resources/anamorphic.bin', 'resources/h265.bin', 'resources/log.bin', 'resources/quality.bin', 'resources/shared.bin', 'resources/video-orientation.bin')
+CODE_FILES=('resources/precapture.bin', 'resources/pixelshift.bin', 'resources/pixelshift-af.bin', 'resources/opengate.bin', 'resources/anamorphic.bin', 'resources/h265.bin', 'resources/log.bin', 'resources/quality.bin', 'resources/shared.bin', 'resources/video-orientation.bin', 'resources/shuttersound.bin')
+SHUTTER_UNIT='resources/shuttersound.bin'
 MANIFEST='release-manifest.json'
 TAG=r'v[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc\.[1-9][0-9]*|r[1-9][0-9]*))?'
 def need(ok,message):
@@ -269,7 +270,7 @@ def check_release(path,expected_commit=None):
         need(all((e.external_attr>>16)&0o170000==0o100000 for e in entries),'Non-regular ZIP member')
         files={n:archive.read(prefix+'/'+n) for n in (*SOURCE_FILES,*CODE_FILES)}
         record=json.loads(archive.read(prefix+'/'+MANIFEST))
-    need(record['schema']==2 and record['tag']==prefix.removeprefix('NikonFirmwarePatch-'),'Release identity mismatch')
+    need(record['schema']==3 and record['tag']==prefix.removeprefix('NikonFirmwarePatch-'),'Release identity mismatch')
     need(re.fullmatch('[0-9a-f]{40}',record['source_commit']),'Invalid source commit')
     need(expected_commit is None or record['source_commit']==expected_commit,'Unexpected source commit')
     need(set(record['files'])==set(files),'Manifest member mismatch')
@@ -278,11 +279,16 @@ def check_release(path,expected_commit=None):
     for name in SOURCE_FILES:
         need(files[name]==(ROOT/name).read_bytes(),'Source differs from this checkout: '+name)
     units=json.loads((ROOT/'resources/compiled.json').read_text())['units']
-    need(set(CODE_FILES)=={u['resource'] for u in units.values()},'Code allowlist differs')
+    need(set(CODE_FILES)=={u['resource'] for u in units.values()}|{SHUTTER_UNIT},'Code allowlist differs')
     need(record['compiled_units']==units,'Compiler/source provenance mismatch')
     for name,unit in units.items():
         raw=files[unit['resource']]
         need(len(raw)==unit['bytes'] and digest(raw)==unit['sha256'],'Unreviewed machine code: '+name)
+    # The shutter-sound unit is pinned by the shuttersound.json carried inside the archive itself.
+    shutter=json.loads(files['resources/shuttersound.json'])
+    raw=files[SHUTTER_UNIT]
+    need(len(raw)==shutter['bytes'] and digest(raw)==shutter['sha256'],'Unreviewed machine code: shutter-sound')
+    need(record['shuttersound_unit']=={k:shutter[k] for k in ('bytes','sha256','filled_sha256','compiler')},'Shutter-sound unit provenance mismatch')
     return dict(status='PASS',tag=record['tag'],source_commit=record['source_commit'],source_files=len(SOURCE_FILES),binary_files=list(CODE_FILES),code_bytes=sum(len(files[n]) for n in CODE_FILES),archive_sha256=digest(path.read_bytes()),firmware_included=False,scope='Archive members, source identity and pinned patch bytes')
 
 def main():

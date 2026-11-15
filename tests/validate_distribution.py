@@ -69,6 +69,26 @@ def main():
                         return json.dumps(record).encode()
                     return raw
                 write([(e,reseal(e,raw)) for e,raw in altered]);reject('resealed changed '+code,lambda:check_release(bad))
+            # The shutter-sound unit is pinned by the archive's own resources/shuttersound.json (a
+            # SOURCE_FILES member), so a swapped member stays rejected even when the manifest is
+            # fully resealed to describe the swapped bytes.
+            shutter='resources/shuttersound.bin'
+            def shutter_reseal(e,raw):
+                if e.filename==prefix+'/'+shutter:return bytes([raw[0]^1])+raw[1:]
+                if e.filename==prefix+'/'+MANIFEST:
+                    record=json.loads(raw)
+                    swapped=next(bytes([r[0]^1])+r[1:] for i,r in members if i.filename==prefix+'/'+shutter)
+                    record['files'][shutter]={'bytes':len(swapped),'sha256':hashlib.sha256(swapped).hexdigest()}
+                    record['shuttersound_unit']['sha256']=record['files'][shutter]['sha256']
+                    return json.dumps(record).encode()
+                return raw
+            write([(e,shutter_reseal(e,raw)) for e,raw in members]);reject('resealed shutter-sound unit against its own pin',lambda:check_release(bad))
+            # Schema 2 manifests predate the shutter-sound unit and must stay rejected.
+            def downgrade(e,raw):
+                if e.filename!=prefix+'/'+MANIFEST:return raw
+                record=json.loads(raw);record['schema']=2;record.pop('shuttersound_unit',None)
+                return json.dumps(record).encode()
+            write([(e,downgrade(e,raw)) for e,raw in members]);reject('legacy schema 2 manifest',lambda:check_release(bad))
             reject('wrong source commit',lambda:check_release(a.archive,'0'*40))
     except Exception as e:
         failures.append(str(e));raise
