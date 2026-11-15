@@ -11,6 +11,8 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from features import FEATURES  # noqa: E402
 
 
 def digest(path):
@@ -53,7 +55,7 @@ def main():
         with tempfile.TemporaryDirectory(prefix='nikon-prebuilt-cli-') as directory:
             for label, features, version in (
                     ('video-photo', ['video-quality', 'photo-tools'], '00.01'),
-                    ('all', ['framing', 'video-quality', 'log-colour', 'photo-tools'], args.all_version)):
+                    ('all', list(FEATURES), args.all_version)):
                 check = json.loads(run(ROOT / 'patch.py', stock, '--features', *features, '--check'))
                 if check['status'] != 'COMPATIBLE':
                     raise ValueError('Input compatibility check failed')
